@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Student Information Form</title>
+
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="script.js">
+  
+</head>
+<body>
+
+<div class="form-container">
+  <h2>Student Information Form</h2>
+  
+  <form id="myForm">
+    <!-- Personal Details -->
+    <fieldset>
+      <legend>Personal Details</legend>
+      <div class="form-group">
+        <label for="name">Name *</label>
+        <input type="text" id="name" placeholder="Enter full name" required>
+        <label class="error-label" id="name-error">Name is required.</label>
+      </div>
+
+      <div class="form-group">
+        <label for="gender">Gender *</label>
+        <select id="gender" required>
+          <option value="">Select</option>
+          <option>Male</option>
+          <option>Female</option>
+          <option>Other</option>
+        </select>
+        <label class="error-label" id="gender-error">Gender is required.</label>
+      </div>
+      
+      <div class="form-group">
+        <label for="dob">Date of Birth *</label>
+        <input type="date" id="dob" required>
+        <label class="error-label" id="dob-error">DOB is required.</label>
+        <label class="error-label" id="dob-age-error">You must be at least 10 years old.</label>
+      </div>
+
+      <div class="form-group">
+        <label for="mobile">Mobile Number *</label>
+        <input type="text" id="mobile" placeholder="Enter 10-digit number" required>
+        <label class="error-label" id="mobile-error">Please enter a valid 10-digit mobile number.</label>
+      </div>
+
+      <div class="form-group">
+        <label for="email">Email *</label>
+        <input type="email" id="email" placeholder="you@example.com" required>
+        <label class="error-label" id="email-error">Please enter a valid email address ending with .com</label>
+      </div>
+
+      <div class="form-group">
+        <label for="country">Country *</label>
+        <select id="country" required>
+          <option value="">Select Country</option>
+          <!-- Options will be populated by JavaScript -->
+        </select>
+        <label class="error-label" id="country-error">Country is required.</label>
+      </div>
+
+      <div class="form-group">
+        <label for="state">State *</label>
+        <select id="state" required disabled>
+          <option value="">Select State</option>
+          <!-- Options will be populated by JavaScript -->
+        </select>
+        <label class="error-label" id="state-error">State is required.</label>
+      </div>
+
+      <div class="form-group">
+        <label for="city">City *</label>
+        <select id="city" required disabled>
+          <option value="">Select City</option>
+          <!-- Options will be populated by JavaScript -->
+        </select>
+        <label class="error-label" id="city-error">City is required.</label>
+      </div>
+
+      <div class="form-group">
+        <label for="photo">Upload Photo</label>
+        <input type="file" id="photo" accept=".jpg, .png">
+      </div>
+    </fieldset>
+
+    <!-- Parent Details -->
+    <fieldset>
+      <legend>Parent/Guardian Details</legend>
+      <div class="form-group">
+        <label for="fatherName">Father's Name</label>
+        <input type="text" id="fatherName">
+      </div>
+
+      <div class="form-group">
+        <label for="fatherOccupation">Father's Occupation</label>
+        <input type="text" id="fatherOccupation">
+      </div>
+
+      <div class="form-group">
+        <label for="motherName">Mother's Name</label>
+        <input type="text" id="motherName">
+      </div>
+
+      <div class="form-group">
+        <label for="motherOccupation">Mother's Occupation</label>
+        <input type="text" id="motherOccupation">
+      </div>
+
+      <div class="form-group">
+        <label for="fatherPhone">Father's Phone</label>
+        <input type="text" id="fatherPhone">
+        <label class="error-label" id="fatherPhone-error">Please enter a valid 10-digit number.</label>
+      </div>
+
+      <div class="form-group">
+        <label for="motherPhone">Mother's Phone</label>
+        <input type="text" id="motherPhone">
+        <label class="error-label" id="motherPhone-error">Please enter a valid 10-digit number.</label>
+      </div>
+
+      <div class="form-group full">
+        <label for="address">Address</label>
+        <textarea id="address" rows="2"></textarea>
+      </div>
+    </fieldset>
+
+    <!-- College Details -->
+    <fieldset>
+      <legend>College Details</legend>
+      <div class="form-group">
+        <label for="regNumber">Registration Number *</label>
+        <input type="text" id="regNumber" required>
+        <label class="error-label" id="regNumber-error">Registration Number must be exactly 7 digits.</label>
+      </div>
+      
+      <div class="form-group">
+        <label for="collegeName">College Name</label>
+        <input type="text" id="collegeName">
+      </div>
+
+      <div class="form-group">
+        <label for="courseName">Course Name</label>
+        <input type="text" id="courseName" placeholder="e.g., Master of Computer Application">
+      </div>
+
+      <div class="form-group">
+        <label for="doj">Date of Joining *</label>
+        <input type="date" id="doj" required>
+        <label class="error-label" id="doj-error">Date of Joining is required.</label>
+      </div>
+
+      <div class="form-group">
+        <label for="cgpa">CGPA *</label>
+        <input type="number" id="cgpa" step="0.01" min="0" max="10" placeholder="e.g., 8.5" required>
+        <label class="error-label" id="cgpa-error">CGPA must be between 0 and 10.</label>
+      </div>
+
+      <div class="form-group">
+        <label for="bloodGroup">Blood Group</label>
+        <select id="bloodGroup">
+          <option value="">Select</option>
+          <option>B+</option>
+          <option>A+</option>
+          <option>O+</option>
+          <option>AB+</option>
+        </select>
+      </div>
+      
+      <div class="form-group">
+        <label for="studentType">Student Type</label>
+        <select id="studentType">
+          <option value="">Select Type</option>
+          <option>Day Scholar</option>
+          <option>Hosteller</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label for="status">Status</label>
+        <select id="status">
+          <option>Active</option>
+          <option>Inactive</option>
+        </select>
+      </div>
+    </fieldset>
+
+    <div class="form-buttons">
+      <button type="reset" class="clear">Clear</button>
+      <button type="submit" class="submit">Submit</button>
+    </div>
+  </form>
+</div>
+
+</body>
+</html>

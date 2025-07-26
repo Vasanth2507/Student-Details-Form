@@ -1,15 +1,39 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Student Information Form</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 
   <link rel="stylesheet" href="style.css">
-  <link rel="stylesheet" href="script.js">
-  
+
 </head>
 <body>
+
+  <script src="script.js"></script>
+  
+<!-- Clear Confirmation Popup -->
+<div class="confirmation-popup" id="confirmationPopup">
+  <div class="confirmation-content">
+    <div class="confirmation-message">Are you sure you want to clear the form? All entered data will be lost.</div>
+    <div class="confirmation-buttons">
+      <button class="confirm-btn" id="confirmClear">Yes, Clear</button>
+      <button class="cancel-btn" id="cancelClear">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<!-- Submit Confirmation Popup -->
+<div class="confirmation-popup" id="submitConfirmationPopup">
+  <div class="confirmation-content">
+    <div class="confirmation-message">Are you sure you want to submit the form?</div>
+    <div class="confirmation-buttons">
+      <button class="confirm-btn" id="confirmSubmit">Yes, Submit</button>
+      <button class="cancel-btn" id="cancelSubmit">Cancel</button>
+    </div>
+  </div>
+</div>
 
 <div class="form-container">
   <h2>Student Information Form</h2>
@@ -82,8 +106,22 @@
       </div>
 
       <div class="form-group">
-        <label for="photo">Upload Photo</label>
-        <input type="file" id="photo" accept=".jpg, .png">
+        <label for="photo">Upload Profile  *</label>
+        <div class="profile-picture-container">
+          <div class="profile-picture" id="profile-picture">
+            <div class="profile-picture-icon">
+              <i class="fas fa-user"></i>
+            </div>
+          </div>
+          <div class="file-upload-wrapper">
+            <div class="file-upload-icon">
+              <i class="fas fa-cloud-upload-alt"></i>
+            </div>
+            <div class="file-upload-text">Click to upload photo</div>
+            <input type="file" id="photo" accept=".jpg, .jpeg, .png">
+          </div>
+          <label class="error-label" id="photo-error">Profile picture is required.</label>
+        </div>
       </div>
     </fieldset>
 
@@ -91,40 +129,45 @@
     <fieldset>
       <legend>Parent/Guardian Details</legend>
       <div class="form-group">
-        <label for="fatherName">Father's Name</label>
-        <input type="text" id="fatherName">
+        <label for="fatherName">Father's Name *</label>
+        <input type="text" id="fatherName" required>
+        <label class="error-label" id="fatherName-error">Father's name is required.</label>
       </div>
 
       <div class="form-group">
-        <label for="fatherOccupation">Father's Occupation</label>
-        <input type="text" id="fatherOccupation">
+        <label for="fatherOccupation">Father's Occupation *</label>
+        <input type="text" id="fatherOccupation" required>
+        <label class="error-label" id="fatherOccupation-error">Father's occupation is required.</label>
       </div>
 
       <div class="form-group">
-        <label for="motherName">Mother's Name</label>
-        <input type="text" id="motherName">
+        <label for="motherName">Mother's Name *</label>
+        <input type="text" id="motherName" required>
+        <label class="error-label" id="motherName-error">Mother's name is required.</label>
       </div>
 
       <div class="form-group">
-        <label for="motherOccupation">Mother's Occupation</label>
-        <input type="text" id="motherOccupation">
+        <label for="motherOccupation">Mother's Occupation *</label>
+        <input type="text" id="motherOccupation" required>
+        <label class="error-label" id="motherOccupation-error">Mother's occupation is required.</label>
       </div>
 
       <div class="form-group">
-        <label for="fatherPhone">Father's Phone</label>
-        <input type="text" id="fatherPhone">
+        <label for="fatherPhone">Father's Phone *</label>
+        <input type="text" id="fatherPhone" required>
         <label class="error-label" id="fatherPhone-error">Please enter a valid 10-digit number.</label>
       </div>
 
       <div class="form-group">
-        <label for="motherPhone">Mother's Phone</label>
-        <input type="text" id="motherPhone">
+        <label for="motherPhone">Mother's Phone *</label>
+        <input type="text" id="motherPhone" required>
         <label class="error-label" id="motherPhone-error">Please enter a valid 10-digit number.</label>
       </div>
 
       <div class="form-group full">
-        <label for="address">Address</label>
-        <textarea id="address" rows="2"></textarea>
+        <label for="address">Address *</label>
+        <textarea id="address" rows="2" required spellcheck="false"></textarea>
+        <label class="error-label" id="address-error">Address is required.</label>
       </div>
     </fieldset>
 
@@ -139,12 +182,20 @@
       
       <div class="form-group">
         <label for="collegeName">College Name</label>
-        <input type="text" id="collegeName">
+        <select id="collegeName">
+          <option value="">Select College</option>
+          <option value="Guru Nanak College">Guru Nanak College</option>
+          <option value="Loyola College">Loyola College</option>
+          <option value="Madras Christian College">Madras Christian College</option>
+        </select>
       </div>
 
       <div class="form-group">
         <label for="courseName">Course Name</label>
-        <input type="text" id="courseName" placeholder="e.g., Master of Computer Application">
+        <select id="courseName" disabled>
+          <option value="">Select Course</option>
+          <!-- Will be populated based on college selection -->
+        </select>
       </div>
 
       <div class="form-group">
@@ -155,7 +206,7 @@
 
       <div class="form-group">
         <label for="cgpa">CGPA *</label>
-        <input type="number" id="cgpa" step="0.01" min="0" max="10" placeholder="e.g., 8.5" required>
+        <input type="text" id="cgpa" placeholder="e.g., 8.5" required>
         <label class="error-label" id="cgpa-error">CGPA must be between 0 and 10.</label>
       </div>
 
@@ -189,11 +240,10 @@
     </fieldset>
 
     <div class="form-buttons">
-      <button type="reset" class="clear">Clear</button>
+      <button type="button" class="clear" id="clearButton">Clear</button>
       <button type="submit" class="submit">Submit</button>
     </div>
   </form>
 </div>
-
 </body>
 </html>

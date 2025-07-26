@@ -1,5 +1,12 @@
 document.addEventListener("DOMContentLoaded", function () {
   const form = document.getElementById("myForm");
+  const clearButton = document.getElementById("clearButton");
+  const confirmationPopup = document.getElementById("confirmationPopup");
+  const confirmClearButton = document.getElementById("confirmClear");
+  const cancelClearButton = document.getElementById("cancelClear");
+  const submitConfirmationPopup = document.getElementById("submitConfirmationPopup");
+  const confirmSubmitButton = document.getElementById("confirmSubmit");
+  const cancelSubmitButton = document.getElementById("cancelSubmit");
 
   // Country-State-City data structure
   const locationData = {
@@ -20,10 +27,110 @@ document.addEventListener("DOMContentLoaded", function () {
     }
   };
 
+  // College-Course data structure
+  const collegeCourseData = {
+    "Guru Nanak College": ["Bachelor of Arts - English", "Bachelor of Science -Computer Science", "Master of Computer Applications"],
+    "Loyola College": ["Bachelor of Science", "Master of Computer Science", "MBA"],
+    "Madras Christian College": ["Bachelor of Science", "Master of Engineering"],
+  };
+
   // DOM elements
   const countrySelect = document.getElementById("country");
   const stateSelect = document.getElementById("state");
   const citySelect = document.getElementById("city");
+  const collegeSelect = document.getElementById("collegeName");
+  const courseSelect = document.getElementById("courseName");
+  const photoInput = document.getElementById("photo");
+  const profilePicture = document.getElementById("profile-picture");
+  const photoError = document.getElementById("photo-error");
+
+  // Show confirmation popup when Clear button is clicked
+  clearButton.addEventListener("click", function() {
+    confirmationPopup.classList.add("active");
+  });
+
+  // Handle confirmation to clear the form
+  confirmClearButton.addEventListener("click", function() {
+    resetForm();
+    confirmationPopup.classList.remove("active");
+  });
+
+  // Handle cancellation of clear action
+  cancelClearButton.addEventListener("click", function() {
+    confirmationPopup.classList.remove("active");
+  });
+
+  // Function to reset the form
+  function resetForm() {
+    form.reset();
+    
+    // Reset location selects
+    stateSelect.disabled = true;
+    citySelect.disabled = true;
+    stateSelect.innerHTML = '<option value="">Select State</option>';
+    citySelect.innerHTML = '<option value="">Select City</option>';
+    
+    // Reset college and course selects
+    courseSelect.disabled = true;
+    courseSelect.innerHTML = '<option value="">Select Course</option>';
+    
+    // Reset profile picture
+    const img = profilePicture.querySelector('img');
+    if (img) {
+      profilePicture.removeChild(img);
+    }
+    if (!profilePicture.querySelector('.profile-picture-icon')) {
+      const icon = document.createElement('div');
+      icon.className = 'profile-picture-icon';
+      icon.innerHTML = '<i class="fas fa-user"></i>';
+      profilePicture.appendChild(icon);
+    }
+    
+    // Clear all errors
+    document.querySelectorAll('.error-label').forEach(el => {
+      el.style.display = 'none';
+    });
+    document.querySelectorAll('.error').forEach(el => {
+      el.classList.remove('error');
+    });
+  }
+
+  // Photo upload preview
+  photoInput.addEventListener('change', function() {
+    const file = this.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        // Remove the icon
+        const icon = profilePicture.querySelector('.profile-picture-icon');
+        if (icon) {
+          profilePicture.removeChild(icon);
+        }
+        
+        // Create or update the image
+        let img = profilePicture.querySelector('img');
+        if (!img) {
+          img = document.createElement('img');
+          profilePicture.appendChild(img);
+        }
+        img.src = e.target.result;
+        photoError.style.display = 'none';
+      }
+      reader.readAsDataURL(file);
+    } else {
+      // If no file selected, show the icon again
+      const img = profilePicture.querySelector('img');
+      if (img) {
+        profilePicture.removeChild(img);
+      }
+      if (!profilePicture.querySelector('.profile-picture-icon')) {
+        const icon = document.createElement('div');
+        icon.className = 'profile-picture-icon';
+        icon.innerHTML = '<i class="fas fa-user"></i>';
+        profilePicture.appendChild(icon);
+      }
+    }
+  });
 
   // Populate countries
   Object.keys(locationData).forEach(country => {
@@ -31,6 +138,28 @@ document.addEventListener("DOMContentLoaded", function () {
     option.value = country;
     option.textContent = country;
     countrySelect.appendChild(option);
+  });
+
+  // College change handler
+  collegeSelect.addEventListener("change", function() {
+    // Reset course
+    courseSelect.innerHTML = '<option value="">Select Course</option>';
+    
+    // Enable/disable course select
+    if (this.value) {
+      courseSelect.disabled = false;
+      
+      // Populate courses
+      const courses = collegeCourseData[this.value];
+      courses.forEach(course => {
+        const option = document.createElement("option");
+        option.value = course;
+        option.textContent = course;
+        courseSelect.appendChild(option);
+      });
+    } else {
+      courseSelect.disabled = true;
+    }
   });
 
   // Country change handler
@@ -93,7 +222,19 @@ document.addEventListener("DOMContentLoaded", function () {
   // Function to validate a field
   function validateField(field, errorId, validationFn) {
     const errorElement = document.getElementById(errorId);
-    const isValid = validationFn ? validationFn(field.value) : field.value.trim() !== '';
+    let isValid = false;
+    
+    if (validationFn) {
+      isValid = validationFn(field.value);
+    } else if (field.type === 'checkbox' || field.type === 'radio') {
+      isValid = field.checked;
+    } else if (field.tagName === 'SELECT') {
+      isValid = field.value !== '';
+    } else if (field.type === 'file') {
+      isValid = field.files.length > 0;
+    } else {
+      isValid = field.value.trim() !== '';
+    }
     
     if (!isValid) {
       field.classList.add('error');
@@ -146,41 +287,23 @@ document.addEventListener("DOMContentLoaded", function () {
     { id: 'country', errorId: 'country-error' },
     { id: 'state', errorId: 'state-error' },
     { id: 'city', errorId: 'city-error' },
+    { id: 'fatherName', errorId: 'fatherName-error' },
+    { id: 'fatherOccupation', errorId: 'fatherOccupation-error' },
+    { id: 'motherName', errorId: 'motherName-error' },
+    { id: 'motherOccupation', errorId: 'motherOccupation-error' },
+    { id: 'fatherPhone', errorId: 'fatherPhone-error', validationFn: validateMobile },
+    { id: 'motherPhone', errorId: 'motherPhone-error', validationFn: validateMobile },
+    { id: 'address', errorId: 'address-error' },
     { id: 'regNumber', errorId: 'regNumber-error', validationFn: validateRegNumber },
     { id: 'doj', errorId: 'doj-error' },
-    { id: 'cgpa', errorId: 'cgpa-error', validationFn: validateCGPA }
+    { id: 'cgpa', errorId: 'cgpa-error', validationFn: validateCGPA },
+    { id: 'photo', errorId: 'photo-error' }
   ];
 
-  requiredFields.forEach(fieldInfo => {
-    const field = document.getElementById(fieldInfo.id);
-    field.addEventListener('blur', function() {
-      validateField(field, fieldInfo.errorId, fieldInfo.validationFn);
-      
-      // Special case for DOB to show age error
-      if (fieldInfo.id === 'dob' && field.value && !validateDOB(field.value)) {
-        document.getElementById('dob-age-error').style.display = 'block';
-        field.classList.add('error');
-      } else if (fieldInfo.id === 'dob') {
-        document.getElementById('dob-age-error').style.display = 'none';
-      }
-    });
-  });
-
-  // Prevent non-numeric input in mobile and registration fields
-  document.getElementById("mobile").addEventListener("input", function(e) {
-    this.value = this.value.replace(/[^0-9]/g, '');
-  });
-  
-  document.getElementById("regNumber").addEventListener("input", function(e) {
-    this.value = this.value.replace(/[^0-9]/g, '');
-  });
-
-  // Form submission handler
-  form.addEventListener("submit", function(e) {
-    e.preventDefault();
+  // Validate all fields on submit
+  function validateAllFields() {
     let isValid = true;
-
-    // Validate all required fields
+    
     requiredFields.forEach(fieldInfo => {
       const field = document.getElementById(fieldInfo.id);
       const fieldValid = validateField(field, fieldInfo.errorId, fieldInfo.validationFn);
@@ -196,48 +319,83 @@ document.addEventListener("DOMContentLoaded", function () {
         isValid = false;
       }
     });
+    
+    return isValid;
+  }
+
+  // Set up blur event listeners for all required fields
+  requiredFields.forEach(fieldInfo => {
+    const field = document.getElementById(fieldInfo.id);
+    if (field.type !== 'file') { // Skip file input for blur events
+      field.addEventListener('blur', function() {
+        validateField(field, fieldInfo.errorId, fieldInfo.validationFn);
+        
+        // Special case for DOB to show age error
+        if (fieldInfo.id === 'dob' && field.value && !validateDOB(field.value)) {
+          document.getElementById('dob-age-error').style.display = 'block';
+          field.classList.add('error');
+        } else if (fieldInfo.id === 'dob') {
+          document.getElementById('dob-age-error').style.display = 'none';
+        }
+      });
+    }
+  });
+
+  // Prevent non-numeric input in mobile, fatherPhone, motherPhone, and registration fields
+  document.getElementById("mobile").addEventListener("input", function(e) {
+    this.value = this.value.replace(/[^0-9]/g, '');
+  });
+  
+  document.getElementById("fatherPhone").addEventListener("input", function(e) {
+    this.value = this.value.replace(/[^0-9]/g, '');
+  });
+
+  document.getElementById("motherPhone").addEventListener("input", function(e) {
+    this.value = this.value.replace(/[^0-9]/g, '');
+  });
+  
+  document.getElementById("regNumber").addEventListener("input", function(e) {
+    this.value = this.value.replace(/[^0-9]/g, '');
+  });
+
+  // Only allow numbers and decimal for CGPA
+  document.getElementById("cgpa").addEventListener("input", function(e) {
+    this.value = this.value.replace(/[^0-9.]/g, '');
+    // Ensure only one decimal point
+    if ((this.value.match(/\./g) || []).length > 1) {
+      this.value = this.value.substring(0, this.value.lastIndexOf('.'));
+    }
+  });
+
+  // Form submission handler
+  form.addEventListener("submit", function(e) {
+    e.preventDefault();
+    
+    // Validate all fields
+    const isValid = validateAllFields();
 
     if (isValid) {
-      alert("Form submitted successfully!");
-      form.reset();
-      
-      // Reset location selects
-      stateSelect.disabled = true;
-      citySelect.disabled = true;
-      stateSelect.innerHTML = '<option value="">Select State</option>';
-      citySelect.innerHTML = '<option value="">Select City</option>';
-      
-      // Clear all errors after successful submission
-      document.querySelectorAll('.error-label').forEach(el => {
-        el.style.display = 'none';
-      });
-      document.querySelectorAll('.error').forEach(el => {
-        el.classList.remove('error');
-      });
+      // Show submit confirmation popup
+      submitConfirmationPopup.classList.add("active");
     } else {
-      // Scroll to the first error
-      const firstError = document.querySelector('.error-label[style="display: block;"], .error-label[style="display: block"]');
-      if (firstError) {
-        firstError.previousElementSibling.scrollIntoView({ behavior: 'smooth', block: 'center' });
-        firstError.previousElementSibling.focus();
+      // Find the first error and scroll to it
+      const firstErrorField = document.querySelector('.error');
+      if (firstErrorField) {
+        firstErrorField.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        firstErrorField.focus();
       }
     }
   });
 
-  // Clear form handler
-  form.querySelector('button[type="reset"]').addEventListener('click', function() {
-    // Reset location selects
-    stateSelect.disabled = true;
-    citySelect.disabled = true;
-    stateSelect.innerHTML = '<option value="">Select State</option>';
-    citySelect.innerHTML = '<option value="">Select City</option>';
-    
-    // Clear all errors
-    document.querySelectorAll('.error-label').forEach(el => {
-      el.style.display = 'none';
-    });
-    document.querySelectorAll('.error').forEach(el => {
-      el.classList.remove('error');
-    });
+  // Handle confirmation to submit the form
+  confirmSubmitButton.addEventListener("click", function() {
+    alert("Student Details Successfully Submitted !");
+    resetForm();
+    submitConfirmationPopup.classList.remove("active");
+  });
+
+  // Handle cancellation of submit action
+  cancelSubmitButton.addEventListener("click", function() {
+    submitConfirmationPopup.classList.remove("active");
   });
 });

@@ -3,34 +3,24 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Student Information Form</title>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+  <title>Document</title>
 
   <link rel="stylesheet" href="style.css">
+
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 
 </head>
 <body>
 
   <script src="script.js"></script>
   
-<!-- Clear Confirmation Popup -->
+  <!-- Confirmation Popup -->
 <div class="confirmation-popup" id="confirmationPopup">
   <div class="confirmation-content">
     <div class="confirmation-message">Are you sure you want to clear the form? All entered data will be lost.</div>
     <div class="confirmation-buttons">
       <button class="confirm-btn" id="confirmClear">Yes, Clear</button>
       <button class="cancel-btn" id="cancelClear">Cancel</button>
-    </div>
-  </div>
-</div>
-
-<!-- Submit Confirmation Popup -->
-<div class="confirmation-popup" id="submitConfirmationPopup">
-  <div class="confirmation-content">
-    <div class="confirmation-message">Are you sure you want to submit the form?</div>
-    <div class="confirmation-buttons">
-      <button class="confirm-btn" id="confirmSubmit">Yes, Submit</button>
-      <button class="cancel-btn" id="cancelSubmit">Cancel</button>
     </div>
   </div>
 </div>
@@ -181,7 +171,7 @@
       </div>
       
       <div class="form-group">
-        <label for="collegeName">College Name</label>
+        <label for="collegeName">Institution Name</label>
         <select id="collegeName">
           <option value="">Select College</option>
           <option value="Guru Nanak College">Guru Nanak College</option>
@@ -240,10 +230,12 @@
     </fieldset>
 
     <div class="form-buttons">
-      <button type="button" class="clear" id="clearButton">Clear</button>
       <button type="submit" class="submit">Submit</button>
+      <button type="button" class="clear" id="clearButton">Clear</button>
+      
     </div>
   </form>
 </div>
+
 </body>
 </html>

@@ -4,9 +4,6 @@ document.addEventListener("DOMContentLoaded", function () {
   const confirmationPopup = document.getElementById("confirmationPopup");
   const confirmClearButton = document.getElementById("confirmClear");
   const cancelClearButton = document.getElementById("cancelClear");
-  const submitConfirmationPopup = document.getElementById("submitConfirmationPopup");
-  const confirmSubmitButton = document.getElementById("confirmSubmit");
-  const cancelSubmitButton = document.getElementById("cancelSubmit");
 
   // Country-State-City data structure
   const locationData = {
@@ -27,12 +24,16 @@ document.addEventListener("DOMContentLoaded", function () {
     }
   };
 
-  // College-Course data structure
-  const collegeCourseData = {
-    "Guru Nanak College": ["Bachelor of Arts - English", "Bachelor of Science -Computer Science", "Master of Computer Applications"],
-    "Loyola College": ["Bachelor of Science", "Master of Computer Science", "MBA"],
-    "Madras Christian College": ["Bachelor of Science", "Master of Engineering"],
-  };
+  // Common courses for all colleges
+  const commonCourses = [
+    "Bachelor of Science - Computer Science",
+    "Bachelor of Science - Information Technology",
+    "Bachelor of Commerce",
+    "Bachelor of Business Administration",
+    "Bachelor of Arts - English",
+    "Master of Computer Applications",
+    "Master of Business Administration"
+  ];
 
   // DOM elements
   const countrySelect = document.getElementById("country");
@@ -140,26 +141,21 @@ document.addEventListener("DOMContentLoaded", function () {
     countrySelect.appendChild(option);
   });
 
-  // College change handler
+  // College change handler - now uses common courses for all colleges
   collegeSelect.addEventListener("change", function() {
     // Reset course
     courseSelect.innerHTML = '<option value="">Select Course</option>';
     
-    // Enable/disable course select
-    if (this.value) {
-      courseSelect.disabled = false;
-      
-      // Populate courses
-      const courses = collegeCourseData[this.value];
-      courses.forEach(course => {
-        const option = document.createElement("option");
-        option.value = course;
-        option.textContent = course;
-        courseSelect.appendChild(option);
-      });
-    } else {
-      courseSelect.disabled = true;
-    }
+    // Enable course select if any college is selected
+    courseSelect.disabled = !this.value;
+    
+    // Populate the same courses for all colleges
+    commonCourses.forEach(course => {
+      const option = document.createElement("option");
+      option.value = course;
+      option.textContent = course;
+      courseSelect.appendChild(option);
+    });
   });
 
   // Country change handler
@@ -375,8 +371,8 @@ document.addEventListener("DOMContentLoaded", function () {
     const isValid = validateAllFields();
 
     if (isValid) {
-      // Show submit confirmation popup
-      submitConfirmationPopup.classList.add("active");
+      alert("Student Details Successfully Submitted !");
+      resetForm();
     } else {
       // Find the first error and scroll to it
       const firstErrorField = document.querySelector('.error');
@@ -385,17 +381,5 @@ document.addEventListener("DOMContentLoaded", function () {
         firstErrorField.focus();
       }
     }
-  });
-
-  // Handle confirmation to submit the form
-  confirmSubmitButton.addEventListener("click", function() {
-    alert("Student Details Successfully Submitted !");
-    resetForm();
-    submitConfirmationPopup.classList.remove("active");
-  });
-
-  // Handle cancellation of submit action
-  cancelSubmitButton.addEventListener("click", function() {
-    submitConfirmationPopup.classList.remove("active");
   });
 });

@@ -1,0 +1,1256 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Student Information Form</title>
+  <!-- Bootstrap CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+  <!-- jQuery -->
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <style>
+    :root {
+      --primary-color: #2c7be5;
+      --error-color: #dc3545;
+      --success-color: #28a745;
+      --warning-color: #ffc107;
+    }
+    
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #f4f7f8;
+      padding: 40px 0;
+      color: #333;
+    }
+    .form-container {
+      max-width: 900px;
+      background: #fff;
+      padding: 30px 40px;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+    h2 {
+      text-align: center;
+      color: #333;
+      margin-bottom: 25px;
+    }
+    fieldset {
+      border: 1px solid #ddd;
+      padding: 20px;
+      margin-bottom: 20px;
+      border-radius: 8px;
+      position: relative;
+    }
+    legend {
+      padding: 0 10px;
+      font-weight: bold;
+      color: var(--primary-color);
+      float: none;
+      width: auto;
+      font-size: 1.1rem;
+    }
+    .form-control, .form-select {
+      border: none !important;
+      border-bottom: 2px solid #ccc !important;
+      background: transparent !important;
+      padding: 8px 5px !important;
+      border-radius: 0 !important;
+      box-shadow: none !important;
+      transition: border-color 0.3s ease !important;
+    }
+    .form-control:focus, .form-select:focus {
+      border-bottom-color: var(--primary-color) !important;
+    }
+    .form-select:disabled {
+      background-color: #f5f5f5 !important;
+      color: #999 !important;
+      border-bottom-color: #ddd !important;
+    }
+    .error-label {
+      display: none;
+      color: var(--error-color);
+      font-size: 13px;
+      margin-top: 5px;
+    }
+    .is-invalid {
+      border-bottom-color: var(--error-color) !important;
+    }
+    .is-valid {
+      border-bottom-color: var(--success-color) !important;
+    }
+    .profile-picture {
+      width: 100px;
+      height: 100px;
+      border-radius: 50%;
+      background-color: #f0f0f0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin-bottom: 15px;
+      overflow: hidden;
+      border: 2px solid #ddd;
+      transition: all 0.3s ease;
+    }
+    .profile-picture:hover {
+      border-color: var(--primary-color);
+    }
+    .profile-picture-icon {
+      font-size: 40px;
+      color: #999;
+    }
+    .profile-picture img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+    .file-upload-wrapper {
+      position: relative;
+      width: 100%;
+      padding: 10px;
+      border: 2px dashed #ccc;
+      border-radius: 8px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+    .file-upload-wrapper:hover {
+      border-color: var(--primary-color);
+      background-color: #f8fafc;
+    }
+    .file-upload-icon {
+      font-size: 20px;
+      color: var(--primary-color);
+      margin-bottom: 8px;
+    }
+    .file-upload-text {
+      color: #666;
+      font-size: 14px;
+      text-align: center;
+    }
+    .file-upload-wrapper input {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      opacity: 0;
+      cursor: pointer;
+    }
+    
+    /* Character counter */
+    .char-counter {
+      font-size: 12px;
+      text-align: right;
+      color: #6c757d;
+      margin-top: 5px;
+    }
+    .char-counter.warning {
+      color: var(--warning-color);
+    }
+    .char-counter.error {
+      color: var(--error-color);
+    }
+    
+    /* Loading indicator */
+    .loading-indicator {
+      display: none;
+      text-align: center;
+      padding: 20px;
+    }
+    .spinner {
+      width: 40px;
+      height: 40px;
+      margin: 0 auto 15px;
+      border: 4px solid rgba(0, 0, 0, 0.1);
+      border-left-color: var(--primary-color);
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+    
+    /* Confirmation Popup Styles */
+    .confirmation-popup {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.5);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+      opacity: 0;
+      visibility: hidden;
+      transition: all 0.3s ease;
+    }
+    
+    .confirmation-popup.active {
+      opacity: 1;
+      visibility: visible;
+    }
+    
+    .confirmation-content {
+      background-color: white;
+      padding: 25px;
+      border-radius: 8px;
+      max-width: 400px;
+      width: 90%;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+      text-align: center;
+    }
+    
+    .confirmation-message {
+      margin-bottom: 20px;
+      font-size: 16px;
+      color: #333;
+    }
+    
+    .confirmation-buttons {
+      display: flex;
+      justify-content: center;
+      gap: 15px;
+    }
+    
+    /* Success Popup Styles */
+    .success-popup {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.5);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+      opacity: 0;
+      visibility: hidden;
+      transition: all 0.3s ease;
+    }
+    
+    .success-popup.active {
+      opacity: 1;
+      visibility: visible;
+    }
+    
+    .success-content {
+      background-color: white;
+      padding: 30px;
+      border-radius: 8px;
+      max-width: 450px;
+      width: 90%;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+      text-align: center;
+    }
+    
+    .success-icon {
+      font-size: 50px;
+      color: var(--success-color);
+      margin-bottom: 15px;
+    }
+    
+    .success-message {
+      margin-bottom: 20px;
+      font-size: 18px;
+      color: #333;
+      font-weight: 500;
+    }
+    
+    /* Error Popup Styles */
+    .error-popup {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.5);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+      opacity: 0;
+      visibility: hidden;
+      transition: all 0.3s ease;
+    }
+    
+    .error-popup.active {
+      opacity: 1;
+      visibility: visible;
+    }
+    
+    .error-content {
+      background-color: white;
+      padding: 30px;
+      border-radius: 8px;
+      max-width: 450px;
+      width: 90%;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+      text-align: center;
+    }
+    
+    .error-icon {
+      font-size: 50px;
+      color: var(--error-color);
+      margin-bottom: 15px;
+    }
+    
+    .error-message {
+      margin-bottom: 20px;
+      font-size: 18px;
+      color: #333;
+      font-weight: 500;
+    }
+    
+    /* Responsive adjustments */
+    @media (max-width: 768px) {
+      .form-container {
+        padding: 20px;
+      }
+      fieldset {
+        padding: 15px;
+      }
+      .confirmation-buttons {
+        flex-direction: column;
+      }
+    }
+    
+    /* Focus styles for accessibility */
+    button:focus, input:focus, select:focus, textarea:focus {
+      outline: 2px solid var(--primary-color);
+      outline-offset: 2px;
+    }
+    
+    /* Save status indicator */
+    .save-status {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      padding: 8px 15px;
+      border-radius: 4px;
+      font-size: 14px;
+      display: none;
+      z-index: 1001;
+    }
+    .save-status.saving {
+      background-color: var(--warning-color);
+      color: #000;
+      display: block;
+    }
+    .save-status.saved {
+      background-color: var(--success-color);
+      color: white;
+      display: block;
+    }
+  </style>
+</head>
+<body class="d-flex justify-content-center align-items-center min-vh-100">
+
+<!-- Save Status Indicator -->
+<div class="save-status" id="saveStatus"></div>
+
+<!-- Clear Confirmation Popup -->
+<div class="confirmation-popup" id="confirmationPopup">
+  <div class="confirmation-content">
+    <div class="confirmation-message">Are you sure you want to clear the form? All entered data will be lost.</div>
+    <div class="confirmation-buttons">
+      <button class="btn btn-primary" id="confirmClear">Yes, Clear</button>
+      <button class="btn btn-secondary" id="cancelClear">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<!-- Submit Confirmation Popup -->
+<div class="confirmation-popup" id="submitConfirmationPopup">
+  <div class="confirmation-content">
+    <div class="confirmation-message">Are you sure you want to submit the form?</div>
+    <div class="confirmation-buttons">
+      <button class="btn btn-primary" id="confirmSubmit">Yes, Submit</button>
+      <button class="btn btn-secondary" id="cancelSubmit">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<!-- Success Popup -->
+<div class="success-popup" id="successPopup">
+  <div class="success-content">
+    <div class="success-icon">
+      <i class="fas fa-check-circle"></i>
+    </div>
+    <div class="success-message">Student Details Successfully Submitted!</div>
+    <button class="btn btn-primary" id="successOk">OK</button>
+  </div>
+</div>
+
+<!-- Error Popup -->
+<div class="error-popup" id="errorPopup">
+  <div class="error-content">
+    <div class="error-icon">
+      <i class="fas fa-exclamation-circle"></i>
+    </div>
+    <div class="error-message" id="errorPopupMessage">Please fill all required fields correctly.</div>
+    <button class="btn btn-primary" id="errorOk">OK</button>
+  </div>
+</div>
+
+<div class="form-container">
+  <h2><b>STUDENT INFORMATION FORM</b></h2>
+  
+  <form id="myForm">
+    <!-- Personal Details -->
+    <fieldset>
+      <legend>Personal Details</legend>
+      <div class="row">
+        <div class="col-md-6 mb-3">
+          <label for="name" class="form-label">Name *</label>
+          <input type="text" class="form-control" id="name" placeholder="Enter full name" required aria-describedby="name-error">
+          <div class="error-label" id="name-error">Name is required.</div>
+        </div>
+
+        <div class="col-md-6 mb-3">
+          <label for="gender" class="form-label">Gender *</label>
+          <select class="form-select" id="gender" required aria-describedby="gender-error">
+            <option value="">Select</option>
+            <option>Male</option>
+            <option>Female</option>
+            <option>Other</option>
+          </select>
+          <div class="error-label" id="gender-error">Gender is required.</div>
+        </div>
+        
+        <div class="col-md-6 mb-3">
+          <label for="dob" class="form-label">Date of Birth *</label>
+          <input type="date" class="form-control" id="dob" required aria-describedby="dob-error dob-age-error">
+          <div class="error-label" id="dob-error">DOB is required.</div>
+          <div class="error-label" id="dob-age-error">You must be at least 10 years old.</div>
+        </div>
+
+        <div class="col-md-6 mb-3">
+          <label for="mobile" class="form-label">Mobile Number *</label>
+          <input type="text" class="form-control" id="mobile" placeholder="Enter 10-digit number" required aria-describedby="mobile-error">
+          <div class="error-label" id="mobile-error">Please enter a valid 10-digit mobile number.</div>
+          
+        </div>
+
+        <div class="col-md-6 mb-3">
+          <label for="email" class="form-label">Email *</label>
+          <input type="email" class="form-control" id="email" placeholder="you@example.com" required aria-describedby="email-error">
+          <div class="error-label" id="email-error">Please enter a valid email address ending with .com</div>
+        </div>
+
+        <div class="col-md-6 mb-3">
+          <label for="country" class="form-label">Country *</label>
+          <select class="form-select" id="country" required aria-describedby="country-error">
+            <option value="">Select Country</option>
+            <!-- Options will be populated by JavaScript -->
+          </select>
+          <div class="error-label" id="country-error">Country is required.</div>
+        </div>
+
+        <div class="col-md-6 mb-3">
+          <label for="state" class="form-label">State *</label>
+          <select class="form-select" id="state" required disabled aria-describedby="state-error">
+            <option value="">Select State</option>
+            <!-- Options will be populated by JavaScript -->
+          </select>
+          <div class="error-label" id="state-error">State is required.</div>
+        </div>
+
+        <div class="col-md-6 mb-3">
+          <label for="city" class="form-label">City *</label>
+          <select class="form-select" id="city" required disabled aria-describedby="city-error">
+            <option value="">Select City</option>
+            <!-- Options will be populated by JavaScript -->
+          </select>
+          <div class="error-label" id="city-error">City is required.</div>
+        </div>
+
+        <div class="col-md-12 mb-3">
+          <label for="photo" class="form-label">Upload Profile *</label>
+          <div class="d-flex flex-column align-items-center">
+            <div class="profile-picture" id="profile-picture" tabindex="0" aria-label="Profile picture preview">
+              <div class="profile-picture-icon">
+                <i class="fas fa-user"></i>
+              </div>
+            </div>
+            <div class="file-upload-wrapper w-100" id="fileUploadWrapper" aria-describedby="photo-error">
+              <div class="file-upload-icon">
+                <i class="fas fa-cloud-upload-alt"></i>
+              </div>
+              <div class="file-upload-text">Click to upload photo (JPG, PNG, max 2MB)</div>
+              <input type="file" id="photo" accept=".jpg, .jpeg, .png" aria-label="Upload profile picture">
+            </div>
+            <div class="error-label" id="photo-error">Profile picture is required.</div>
+          </div>
+        </div>
+      </div>
+    </fieldset>
+
+    <!-- Parent Details -->
+    <fieldset>
+      <legend>Parent/Guardian Details</legend>
+      <div class="row">
+        <div class="col-md-6 mb-3">
+          <label for="fatherName" class="form-label">Father's Name *</label>
+          <input type="text" class="form-control" id="fatherName" required aria-describedby="fatherName-error">
+          <div class="error-label" id="fatherName-error">Father's name is required.</div>
+        </div>
+
+        <div class="col-md-6 mb-3">
+          <label for="fatherOccupation" class="form-label">Father's Occupation *</label>
+          <input type="text" class="form-control" id="fatherOccupation" required aria-describedby="fatherOccupation-error">
+          <div class="error-label" id="fatherOccupation-error">Father's occupation is required.</div>
+        </div>
+
+        <div class="col-md-6 mb-3">
+          <label for="motherName" class="form-label">Mother's Name *</label>
+          <input type="text" class="form-control" id="motherName" required aria-describedby="motherName-error">
+          <div class="error-label" id="motherName-error">Mother's name is required.</div>
+        </div>
+
+        <div class="col-md-6 mb-3">
+          <label for="motherOccupation" class="form-label">Mother's Occupation *</label>
+          <input type="text" class="form-control" id="motherOccupation" required aria-describedby="motherOccupation-error">
+          <div class="error-label" id="motherOccupation-error">Mother's occupation is required.</div>
+        </div>
+
+        <div class="col-md-6 mb-3">
+          <label for="fatherPhone" class="form-label">Father's Phone *</label>
+          <input type="text" class="form-control" id="fatherPhone" required aria-describedby="fatherPhone-error">
+          <div class="error-label" id="fatherPhone-error">Please enter a valid 10-digit number.</div>
+          
+        </div>
+
+        <div class="col-md-6 mb-3">
+          <label for="motherPhone" class="form-label">Mother's Phone *</label>
+          <input type="text" class="form-control" id="motherPhone" required aria-describedby="motherPhone-error">
+          <div class="error-label" id="motherPhone-error">Please enter a valid 10-digit number.</div>
+      
+        </div>
+
+        <div class="col-12 mb-3">
+          <label for="address" class="form-label">Address *</label>
+          <textarea class="form-control" id="address" rows="2" required spellcheck="false" aria-describedby="address-error"></textarea>
+          <div class="error-label" id="address-error">Address is required.</div>
+          
+        </div>
+      </div>
+    </fieldset>
+
+    <!-- College Details -->
+    <fieldset>
+      <legend>College Details</legend>
+      <div class="row">
+        <div class="col-md-6 mb-3">
+          <label for="regNumber" class="form-label">Registration Number *</label>
+          <input type="text" class="form-control" id="regNumber" required aria-describedby="regNumber-error">
+          <div class="error-label" id="regNumber-error">Registration Number must be exactly 7 digits.</div>
+          <div class="char-counter" id="regNumber-counter">0/7</div>
+        </div>
+        
+        <div class="col-md-6 mb-3">
+          <label for="collegeName" class="form-label">College Name</label>
+          <select class="form-select" id="collegeName" aria-describedby="collegeName-help">
+            <option value="">Select College</option>
+            <option value="Guru Nanak College">Guru Nanak College</option>
+            <option value="Loyola College">Loyola College</option>
+            <option value="Madras Christian College">Madras Christian College</option>
+          </select>
+        
+        </div>
+
+        <div class="col-md-6 mb-3">
+          <label for="courseName" class="form-label">Course Name</label>
+          <select class="form-select" id="courseName" disabled aria-describedby="courseName-help">
+            <option value="">Select Course</option>
+            <!-- Will be populated based on college selection -->
+          </select>
+          
+        </div>
+
+        <div class="col-md-6 mb-3">
+          <label for="doj" class="form-label">Date of Joining *</label>
+          <input type="date" class="form-control" id="doj" required aria-describedby="doj-error">
+          <div class="error-label" id="doj-error">Date of Joining is required.</div>
+        </div>
+
+        <div class="col-md-6 mb-3">
+          <label for="cgpa" class="form-label">CGPA *</label>
+          <input type="text" class="form-control" id="cgpa" placeholder="e.g., 8.5" required aria-describedby="cgpa-error">
+          <div class="error-label" id="cgpa-error">CGPA must be between 0 and 10.</div>
+        </div>
+
+        <div class="col-md-6 mb-3">
+          <label for="bloodGroup" class="form-label">Blood Group</label>
+          <select class="form-select" id="bloodGroup">
+            <option value="">Select</option>
+            <option>B+</option>
+            <option>A+</option>
+            <option>O+</option>
+            <option>AB+</option>
+          </select>
+        </div>
+        
+        <div class="col-md-6 mb-3">
+          <label for="studentType" class="form-label">Student Type</label>
+          <select class="form-select" id="studentType">
+            <option value="">Select Type</option>
+            <option>Day Scholar</option>
+            <option>Hosteller</option>
+          </select>
+        </div>
+
+        <div class="col-md-6 mb-3">
+          <label for="status" class="form-label">Status</label>
+          <select class="form-select" id="status">
+            <option>Active</option>
+            <option>Inactive</option>
+          </select>
+        </div>
+      </div>
+    </fieldset>
+
+    <div class="d-flex justify-content-end gap-2 mt-4">
+      <button type="submit" class="btn btn-primary" id="submitButton">
+        <span class="submit-text">Submit</span>
+        <div class="spinner-border spinner-border-sm d-none" role="status" id="submitSpinner">
+          <span class="visually-hidden">Loading...</span>
+        </div>
+      </button>
+      <button type="button" class="btn btn-secondary" id="clearButton">Clear</button>
+    </div>
+  </form>
+</div>
+
+<!-- Bootstrap JS Bundle with Popper -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+<script>
+$(document).ready(function() {
+  // Country-State-City data structure
+  const locationData = {
+    "India": {
+      "Tamil Nadu": ["Chennai", "Coimbatore", "Madurai", "Tiruchirappalli"],
+      "Kerala": ["Thiruvananthapuram", "Kochi", "Kozhikode", "Thrissur"],
+      "Karnataka": ["Bangalore", "Mysore", "Hubli", "Mangalore"]
+    },
+    "United Kingdom": {
+      "England": ["London", "Manchester", "Birmingham", "Liverpool"],
+      "Scotland": ["Edinburgh", "Glasgow", "Aberdeen", "Dundee"],
+      "Wales": ["Cardiff", "Swansea", "Newport", "Bangor"]
+    },
+    "United States": {
+      "California": ["Los Angeles", "San Francisco", "San Diego", "Sacramento"],
+      "Texas": ["Houston", "Dallas", "Austin", "San Antonio"],
+      "New York": ["New York City", "Buffalo", "Rochester", "Albany"]
+    }
+  };
+
+  // College-Course data structure
+  const collegeCourseData = {
+    "Guru Nanak College": ["Bachelor of Arts - English", "Bachelor of Science - Computer Science", "Master of Computer Applications"],
+    "Loyola College": ["Bachelor of Science", "Master of Computer Science", "MBA"],
+    "Madras Christian College": ["Bachelor of Science", "Master of Engineering"]
+  };
+
+  // DOM elements
+  const $countrySelect = $("#country");
+  const $stateSelect = $("#state");
+  const $citySelect = $("#city");
+  const $collegeSelect = $("#collegeName");
+  const $courseSelect = $("#courseName");
+  const $photoInput = $("#photo");
+  const $profilePicture = $("#profile-picture");
+  const $photoError = $("#photo-error");
+  const $errorPopupMessage = $("#errorPopupMessage");
+  const $saveStatus = $("#saveStatus");
+  const $submitButton = $("#submitButton");
+  const $submitSpinner = $("#submitSpinner");
+  const $submitText = $(".submit-text");
+
+  // Auto-save form data to localStorage
+  function saveFormData() {
+    const formData = {};
+    $('input, select, textarea').each(function() {
+      if (this.type !== 'file') {
+        formData[this.id] = $(this).val();
+      }
+    });
+    
+    // Show saving status
+    $saveStatus.removeClass('saved').addClass('saving').text('Saving...');
+    
+    setTimeout(() => {
+      localStorage.setItem('studentFormData', JSON.stringify(formData));
+      $saveStatus.removeClass('saving').addClass('saved').text('Draft saved');
+      
+      // Hide after 3 seconds
+      setTimeout(() => {
+        $saveStatus.fadeOut(1000);
+      }, 3000);
+    }, 500);
+  }
+
+  // Load saved form data from localStorage
+  function loadFormData() {
+    const savedData = localStorage.getItem('studentFormData');
+    if (savedData) {
+      const formData = JSON.parse(savedData);
+      
+      // Populate all fields except file inputs
+      for (const id in formData) {
+        const $field = $("#" + id);
+        if ($field.length && $field.attr('type') !== 'file') {
+          $field.val(formData[id]);
+          
+          // Trigger change event for dependent fields
+          if (id === 'country' || id === 'state' || id === 'collegeName') {
+            $field.trigger('change');
+          }
+          
+          // Validate field if it has value
+          if (formData[id]) {
+            validateField($field[0]);
+          }
+        }
+      }
+    }
+  }
+
+  // Show confirmation popup when Clear button is clicked
+  $("#clearButton").on("click", function() {
+    $("#confirmationPopup").addClass("active");
+  });
+
+  // Handle confirmation to clear the form
+  $("#confirmClear").on("click", function() {
+    resetForm();
+    $("#confirmationPopup").removeClass("active");
+    localStorage.removeItem('studentFormData');
+  });
+
+  // Handle cancellation of clear action
+  $("#cancelClear").on("click", function() {
+    $("#confirmationPopup").removeClass("active");
+  });
+
+  // Function to reset the form
+  function resetForm() {
+    $("#myForm")[0].reset();
+    
+    // Reset location selects
+    $stateSelect.prop("disabled", true);
+    $citySelect.prop("disabled", true);
+    $stateSelect.html('<option value="">Select State</option>');
+    $citySelect.html('<option value="">Select City</option>');
+    
+    // Reset college and course selects
+    $courseSelect.prop("disabled", true);
+    $courseSelect.html('<option value="">Select Course</option>');
+    
+    // Reset profile picture
+    $profilePicture.find("img").remove();
+    if (!$profilePicture.find(".profile-picture-icon").length) {
+      $profilePicture.append('<div class="profile-picture-icon"><i class="fas fa-user"></i></div>');
+    }
+    
+    // Clear all errors
+    $(".error-label").hide();
+    $(".is-invalid").removeClass("is-invalid");
+    $(".is-valid").removeClass("is-valid");
+    
+    // Reset character counters
+    $(".char-counter").text("0/10").removeClass("warning error");
+    $("#address-counter").text("0/200");
+    $("#regNumber-counter").text("0/7");
+  }
+
+  // Photo upload preview
+  $photoInput.on("change", function() {
+    const file = this.files[0];
+    
+    // Validate file size (max 2MB)
+    if (file && file.size > 2 * 1024 * 1024) {
+      $photoError.text("File size must be less than 2MB").show();
+      this.value = "";
+      return;
+    }
+    
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        // Remove the icon
+        $profilePicture.find(".profile-picture-icon").remove();
+        
+        // Create or update the image
+        let $img = $profilePicture.find("img");
+        if (!$img.length) {
+          $img = $("<img>");
+          $profilePicture.append($img);
+        }
+        $img.attr("src", e.target.result);
+        $photoError.hide();
+        $(this).removeClass("is-invalid").addClass("is-valid");
+        
+        // Save form data
+        saveFormData();
+      }.bind(this);
+      reader.readAsDataURL(file);
+    } else {
+      // If no file selected, show the icon again
+      $profilePicture.find("img").remove();
+      if (!$profilePicture.find(".profile-picture-icon").length) {
+        $profilePicture.append('<div class="profile-picture-icon"><i class="fas fa-user"></i></div>');
+      }
+    }
+  });
+
+  // Character counter for text inputs
+  function setupCharacterCounters() {
+    $("#mobile, #fatherPhone, #motherPhone").on("input", function() {
+      const maxLength = 10;
+      const currentLength = this.value.length;
+      const $counter = $("#" + this.id + "-counter");
+      
+      $counter.text(currentLength + "/" + maxLength);
+      
+      if (currentLength > maxLength) {
+        this.value = this.value.substring(0, maxLength);
+        $counter.text(maxLength + "/" + maxLength).addClass("error");
+      } else if (currentLength === maxLength) {
+        $counter.removeClass("warning error").addClass("success");
+      } else if (currentLength > maxLength - 3) {
+        $counter.removeClass("error").addClass("warning");
+      } else {
+        $counter.removeClass("warning error success");
+      }
+    });
+    
+    $("#regNumber").on("input", function() {
+      const maxLength = 7;
+      const currentLength = this.value.length;
+      const $counter = $("#regNumber-counter");
+      
+      $counter.text(currentLength + "/" + maxLength);
+      
+      if (currentLength > maxLength) {
+        this.value = this.value.substring(0, maxLength);
+        $counter.text(maxLength + "/" + maxLength).addClass("error");
+      } else if (currentLength === maxLength) {
+        $counter.removeClass("warning error").addClass("success");
+      } else if (currentLength > maxLength - 2) {
+        $counter.removeClass("error").addClass("warning");
+      } else {
+        $counter.removeClass("warning error success");
+      }
+    });
+    
+    $("#address").on("input", function() {
+      const maxLength = 200;
+      const currentLength = this.value.length;
+      const $counter = $("#address-counter");
+      
+      $counter.text(currentLength + "/" + maxLength);
+      
+      if (currentLength > maxLength) {
+        this.value = this.value.substring(0, maxLength);
+        $counter.text(maxLength + "/" + maxLength).addClass("error");
+      } else if (currentLength > maxLength * 0.8) {
+        $counter.removeClass("error").addClass("warning");
+      } else {
+        $counter.removeClass("warning error");
+      }
+    });
+  }
+
+  // Populate countries
+  $.each(locationData, function(country) {
+    $countrySelect.append($("<option>", {
+      value: country,
+      text: country
+    }));
+  });
+
+  // College change handler
+  $collegeSelect.on("change", function() {
+    // Reset course
+    $courseSelect.html('<option value="">Select Course</option>');
+    
+    // Enable/disable course select
+    if (this.value) {
+      $courseSelect.prop("disabled", false);
+      
+      // Populate courses
+      const courses = collegeCourseData[this.value];
+      $.each(courses, function(index, course) {
+        $courseSelect.append($("<option>", {
+          value: course,
+          text: course
+        }));
+      });
+    } else {
+      $courseSelect.prop("disabled", true);
+    }
+    
+    // Save form data
+    saveFormData();
+  });
+
+  // Country change handler
+  $countrySelect.on("change", function() {
+    // Reset state and city
+    $stateSelect.html('<option value="">Select State</option>');
+    $citySelect.html('<option value="">Select City</option>');
+    
+    // Enable/disable state select
+    if (this.value) {
+      $stateSelect.prop("disabled", false);
+      
+      // Populate states
+      const states = locationData[this.value];
+      $.each(states, function(state) {
+        $stateSelect.append($("<option>", {
+          value: state,
+          text: state
+        }));
+      });
+    } else {
+      $stateSelect.prop("disabled", true);
+      $citySelect.prop("disabled", true);
+    }
+    
+    // Clear any errors
+    $("#state-error").hide();
+    $("#city-error").hide();
+    $stateSelect.removeClass("is-invalid");
+    $citySelect.removeClass("is-invalid");
+    
+    // Save form data
+    saveFormData();
+  });
+
+  // State change handler
+  $stateSelect.on("change", function() {
+    // Reset city
+    $citySelect.html('<option value="">Select City</option>');
+    
+    // Enable/disable city select
+    if (this.value) {
+      $citySelect.prop("disabled", false);
+      
+      // Populate cities
+      const country = $countrySelect.val();
+      const cities = locationData[country][this.value];
+      $.each(cities, function(index, city) {
+        $citySelect.append($("<option>", {
+          value: city,
+          text: city
+        }));
+      });
+    } else {
+      $citySelect.prop("disabled", true);
+    }
+    
+    // Clear any errors
+    $("#city-error").hide();
+    $citySelect.removeClass("is-invalid");
+    
+    // Save form data
+    saveFormData();
+  });
+
+  // City change handler
+  $citySelect.on("change", function() {
+    // Save form data
+    saveFormData();
+  });
+
+  // Field validation functions
+  function validateMobile(value) {
+    return /^\d{10}$/.test(value);
+  }
+
+  function validateEmail(value) {
+    return /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.com$/.test(value);
+  }
+
+  function validateRegNumber(value) {
+    return /^\d{7}$/.test(value);
+  }
+
+  function validateCGPA(value) {
+    const num = parseFloat(value);
+    return !isNaN(num) && num >= 0 && num <= 10;
+  }
+
+  function validateDOB(value) {
+    if (!value) return false;
+    
+    const enteredDate = new Date(value);
+    const today = new Date();
+    const age = today.getFullYear() - enteredDate.getFullYear();
+    const monthDiff = today.getMonth() - enteredDate.getMonth();
+    const dayDiff = today.getDate() - enteredDate.getDate();
+    
+    // Check if birthday has occurred this year
+    const hasBirthdayOccurred = monthDiff > 0 || (monthDiff === 0 && dayDiff >= 0);
+    const calculatedAge = hasBirthdayOccurred ? age : age - 1;
+    
+    return enteredDate < today && calculatedAge >= 10;
+  }
+
+  // Function to validate a field
+  function validateField(field, showSuccess = true) {
+    const fieldId = field.id;
+    const errorId = fieldId + '-error';
+    const $field = $(field);
+    const $errorElement = $("#" + errorId);
+    let isValid = false;
+    
+    // Check if it's a file input
+    if (field.type === 'file') {
+      isValid = field.files.length > 0;
+    } 
+    // Check if it's a select element
+    else if (field.tagName === 'SELECT') {
+      isValid = $field.val() !== '';
+    } 
+    // Check if it's a regular input/textarea
+    else {
+      isValid = $.trim($field.val()) !== '';
+    }
+    
+    // If there's a custom validation function, use it
+    if (isValid) {
+      switch(fieldId) {
+        case 'mobile':
+        case 'fatherPhone':
+        case 'motherPhone':
+          isValid = validateMobile($field.val());
+          break;
+        case 'email':
+          isValid = validateEmail($field.val());
+          break;
+        case 'regNumber':
+          isValid = validateRegNumber($field.val());
+          break;
+        case 'cgpa':
+          isValid = validateCGPA($field.val());
+          break;
+        case 'dob':
+          isValid = validateDOB($field.val());
+          break;
+      }
+    }
+    
+    if (!isValid && $.trim($field.val()) !== '') {
+      $field.addClass('is-invalid');
+      if (showSuccess) $field.removeClass('is-valid');
+      $errorElement.show();
+      return false;
+    } else if (!isValid) {
+      $field.addClass('is-invalid');
+      if (showSuccess) $field.removeClass('is-valid');
+      $errorElement.show();
+      return false;
+    } else {
+      $field.removeClass('is-invalid');
+      if (showSuccess) $field.addClass('is-valid');
+      $errorElement.hide();
+      return true;
+    }
+  }
+
+  // Required fields configuration
+  const requiredFields = [
+    { id: 'name', errorId: 'name-error' },
+    { id: 'gender', errorId: 'gender-error' },
+    { id: 'dob', errorId: 'dob-error' },
+    { id: 'mobile', errorId: 'mobile-error' },
+    { id: 'email', errorId: 'email-error' },
+    { id: 'country', errorId: 'country-error' },
+    { id: 'state', errorId: 'state-error' },
+    { id: 'city', errorId: 'city-error' },
+    { id: 'fatherName', errorId: 'fatherName-error' },
+    { id: 'fatherOccupation', errorId: 'fatherOccupation-error' },
+    { id: 'motherName', errorId: 'motherName-error' },
+    { id: 'motherOccupation', errorId: 'motherOccupation-error' },
+    { id: 'fatherPhone', errorId: 'fatherPhone-error' },
+    { id: 'motherPhone', errorId: 'motherPhone-error' },
+    { id: 'address', errorId: 'address-error' },
+    { id: 'regNumber', errorId: 'regNumber-error' },
+    { id: 'doj', errorId: 'doj-error' },
+    { id: 'cgpa', errorId: 'cgpa-error' },
+    { id: 'photo', errorId: 'photo-error' }
+  ];
+
+  // Set up input event listeners for real-time validation
+  $.each(requiredFields, function(index, fieldInfo) {
+    const field = document.getElementById(fieldInfo.id);
+    if (field.type !== 'file') { // Skip file input for input events
+      $(field).on("input", function() {
+        validateField(field);
+        
+        // Special case for DOB to show age error
+        if (fieldInfo.id === 'dob' && field.value && !validateDOB(field.value)) {
+          $("#dob-age-error").show();
+          $(field).addClass("is-invalid");
+          $(field).removeClass("is-valid");
+        } else if (fieldInfo.id === 'dob') {
+          $("#dob-age-error").hide();
+        }
+        
+        // Save form data on input
+        saveFormData();
+      });
+    }
+  });
+
+  // Set up blur event listeners for all required fields
+  $.each(requiredFields, function(index, fieldInfo) {
+    const field = document.getElementById(fieldInfo.id);
+    if (field.type !== 'file') { // Skip file input for blur events
+      $(field).on("blur", function() {
+        validateField(field);
+      });
+    }
+  });
+
+  // Validate all fields on submit
+  function validateAllFields() {
+    let isValid = true;
+    let firstInvalidField = null;
+    
+    $.each(requiredFields, function(index, fieldInfo) {
+      const field = document.getElementById(fieldInfo.id);
+      const fieldValid = validateField(field, false);
+      
+      if (!fieldValid && !firstInvalidField) {
+        firstInvalidField = field;
+      }
+      
+      if (!fieldValid) {
+        isValid = false;
+      }
+      
+      // Special case for DOB
+      if (fieldInfo.id === 'dob' && field.value && !validateDOB(field.value)) {
+        $("#dob-age-error").show();
+        $(field).addClass("is-invalid");
+        $(field).removeClass("is-valid");
+        isValid = false;
+        
+        if (!firstInvalidField) {
+          firstInvalidField = field;
+        }
+      }
+    });
+    
+    return {isValid, firstInvalidField};
+  }
+
+  // Prevent non-numeric input in mobile, fatherPhone, motherPhone, and registration fields
+  $("#mobile, #fatherPhone, #motherPhone, #regNumber").on("input", function(e) {
+    this.value = this.value.replace(/[^0-9]/g, '');
+  });
+
+  // Only allow numbers and decimal for CGPA
+  $("#cgpa").on("input", function(e) {
+    this.value = this.value.replace(/[^0-9.]/g, '');
+    // Ensure only one decimal point
+    if ((this.value.match(/\./g) || []).length > 1) {
+      this.value = this.value.substring(0, this.value.lastIndexOf('.'));
+    }
+  });
+
+  // Form submission handler
+  $("#myForm").on("submit", function(e) {
+    e.preventDefault();
+    
+    // Show loading state
+    $submitSpinner.removeClass("d-none");
+    $submitText.text("Submitting...");
+    $submitButton.prop("disabled", true);
+    
+    // Validate all fields
+    const {isValid, firstInvalidField} = validateAllFields();
+
+    if (isValid) {
+      // Simulate API call delay
+      setTimeout(function() {
+        // Hide loading state
+        $submitSpinner.addClass("d-none");
+        $submitText.text("Submit");
+        $submitButton.prop("disabled", false);
+        
+        // Show submit confirmation popup
+        $("#submitConfirmationPopup").addClass("active");
+      }, 1000);
+    } else {
+      // Hide loading state
+      $submitSpinner.addClass("d-none");
+      $submitText.text("Submit");
+      $submitButton.prop("disabled", false);
+      
+      // Show error popup
+      $("#errorPopup").addClass("active");
+      
+      // Scroll to the first error field
+      if (firstInvalidField) {
+        $("html, body").animate({
+          scrollTop: $(firstInvalidField).offset().top - 100
+        }, 500);
+        $(firstInvalidField).focus();
+      }
+    }
+  });
+
+  // Handle confirmation to submit the form
+  $("#confirmSubmit").on("click", function() {
+    // Close the confirmation popup
+    $("#submitConfirmationPopup").removeClass("active");
+    
+    // Show success popup
+    $("#successPopup").addClass("active");
+    
+    // Clear saved form data
+    localStorage.removeItem('studentFormData');
+  });
+
+  // Handle cancellation of submit action
+  $("#cancelSubmit").on("click", function() {
+    $("#submitConfirmationPopup").removeClass("active");
+  });
+
+  // Handle OK button on success popup
+  $("#successOk").on("click", function() {
+    $("#successPopup").removeClass("active");
+    resetForm();
+  });
+
+  // Handle OK button on error popup
+  $("#errorOk").on("click", function() {
+    $("#errorPopup").removeClass("active");
+  });
+  
+  // Initialize character counters
+  setupCharacterCounters();
+  
+  // Load saved form data
+  loadFormData();
+  
+  // Set up auto-save with debounce
+  let saveTimeout;
+  $('input, select, textarea').on('input change', function() {
+    clearTimeout(saveTimeout);
+    saveTimeout = setTimeout(saveFormData, 1000);
+  });
+});
+</script>
+</body>
+</html>
